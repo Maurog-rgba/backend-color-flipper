@@ -52,13 +52,18 @@ export class AuthService {
           salt,
         },
       });
-      delete user.password_hash;
-      return user;
+
+      const { token } = await this.signToken(user.id);
+
+      return {
+        token,
+        message: 'User created successfully',
+      };
     } catch (error) {
       if (error.code === '23505') {
         return new HttpException('User already exist', HttpStatus.CONFLICT);
       } else {
-        console.log("err", error);
+        console.log('err', error);
         throw new InternalServerErrorException();
       }
     }
